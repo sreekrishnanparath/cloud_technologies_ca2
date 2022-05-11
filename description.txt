@@ -1,0 +1,19 @@
+Description of your system.
+
+Tweet Reader App
+===============================
+The application displays the top 10 tweets for the entered topic(hashtag) or as provided default options.
+
+Python Tweepy API is responsible for Twitter API integration with the developer account.
+
+System Components
+--------------------------
+1. AWS cloud formation - Create a collection of AWS services which includes SNS, SQS and S3
+2. AWS SNS - Simple notification service is used to receive the user-chosen options as well as entered text from the PowerShell console and which is published to subscribed SQS endpoint.
+3. AWS SQS - Simple queue service received published topics from SNS and arrange to the queue for the Twitter reader app.
+4. AWS S3 - Stores hashtag JSON file for providing users to choose tweet topic.
+
+Working Flow
+-------------------------
+setup file creates cloud services with the given template JSON file. Demo script file starts tweet reader service to read sqs for 
+tweet topic which is entered by the user. The user console interface receives the user input tweet topic and which is then pushed to sns service. SNS notifies the subscribed sqs which topic and sqs put that message into the queue. The cycle continues and tweetprocessor service fetches the queue information and generates HTML file for the top 10 tweets.
