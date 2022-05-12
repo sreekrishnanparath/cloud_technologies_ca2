@@ -1,2 +1,87 @@
 {
+
+	"Parameters": {
+		"codebucketname": {
+			"Type": "String"
+		}
+	},
+
+    "Resources": {
+
+	"requestqueue": {
+	    "Type": "AWS::SQS::Queue"
+	},
+
+	"responsebkt": {
+	    "Type": "AWS::S3::Bucket"
+	},
+
+	"detectioncodebkt": {
+	    "Type": "AWS::S3::Bucket"
+	},
+
+	"requestqueuepolicy": {
+	    "Type": "AWS::SQS::QueuePolicy",
+	    "Properties": {
+		"Queues": [ {"Ref": "requestqueue" } ],
+		"PolicyDocument": {
+		    "Statement": [
+			{
+			    "Effect": "allow",
+			    "Action": ["SQS:SendMessage", "SQS:ReceiveMessage"],
+			    "Resource": {"Fn::GetAtt": ["requestqueue", "Arn"] }
+			}
+		    ]
+		}
+	    }
+	},
+
+	"detectionprocessor": {
+	    "Type": "AWS::Lambda::Function",
+	    "Properties": {
+		"FunctionName": "detectionprocessor",
+		"Role": { "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/LabRole" },
+		"Runtime": "python3.8",
+		"Handler": "detection.detection_process",
+		"Code": {
+		    "S3Bucket": { "Ref": "codebucketname" },
+		    "S3Key": "detection.zip"
+		}
+	    }
+	},
+
+	"lambdaSqs": {
+              "Type" : "AWS::Lambda::EventSourceMapping",
+              "Properties" : {
+                  "Enabled" : true,
+                  "EventSourceArn" : {
+                    "Fn::GetAtt": [
+                      "requestqueue",
+                      "Arn"
+                    ]
+                  },
+                  "FunctionName" : {"Ref": "detectionprocessor"}
+            }
+        }
+
+
+    },
+
+"Outputs": {
+
+	"codebucketname": {
+		"Value": { "Ref": "codebucketname" }
+	},
+
+	"responsebktname": {
+		"Value": { "Ref": "responsebkt" }
+	},
+
+	"requestqueueurl": {
+	    "Value": { "Ref": "requestqueue" },
+	    "Description": "Request queue URL (for detection app)"
+	}
+}
+
+
 }
