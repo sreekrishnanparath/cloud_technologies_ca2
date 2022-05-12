@@ -1,18 +1,15 @@
 Description of your system.
 
-Image/Video detection system(Computer Vision)
+Image/Video detection system 
+Working Flow (Computer Vision)
 ===============================
-The systems is based on computer vision and artificial interlligence. System consist of Api service and frontend web applicaition to upload images and videos for detection. Python computer vision servers will perform the detection operation and produce detection reponse to the clients. Application has real time and queue based detection. Queue base detection works with AWS cloud technology which is S3, Lamda and SQS. The images/videos should uploaded to the SQS for detection and computer vision server will fetch these queue message and push the reponse to S3 after detection. Whenever queue revceives a message the lamda function get invoked for the processing.
+The systems is based on computer vision and artificial interlligence. System consist of Api service and frontend web applicaition to upload images and videos for detection. Python computer vision servers will perform the detection operation and produce detection reponse to the clients. Application has real time and queue based detection. Queue base detection works with AWS cloud technology which is S3, Lamda and SQS. The images/videos should uploaded to S3 bucker and also publish message to SQS for detection. SQS message triggers the Lambda function which is responsible for invoking the cron job servers and computer vision server will fetch these inputs from s3.Detection reponses uploaded to S3 and RDS/Cache. Then cron job server wait for the next message. Python cron jobs and  will run on the EC2 machine.
 
 
 System Components
 --------------------------.
 1. AWS cloud formation - Create a collection of AWS services which includes SQS, S3, Lambda and EC2.
 2. AWS Lamda - Rest service implementation for database operion as well as AWS integration(SQS and S3).
-2. AWS SQS - Simple queue service to publish topics(image/video) from restapi/front end app.
+3. AWS SQS - Simple queue service to publish topics(image/video) from restapi/front end app.
 4. AWS S3 - Stores reponse(detection) for clients.
-
-
-Working Flow
--------------------------
-Client(Api/frontend webapp) will upload the image/video to the system based to real time and queue based subscription. The rest service will route the upload as per the subscription to the SQS. Python computer vision cron jobs read the SQS and do the detection and the reponse will pushed to S3 for client result generation. Python cron jobs will run on the EC2 machine.
+5. AWS RDS - Store information about the detection and other settings.
