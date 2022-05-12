@@ -2,7 +2,7 @@
 # CA1 checks file
 # Peadar Grant
 
-$Files = @( "description.pdf", "plan.pdf", "template.json", "setup.ps1", "teardown.ps1" )
+$Files = @( "description.txt", "plan.pdf", "template.json", "setup.ps1", "teardown.ps1", "detection.py", "stack_output_function.ps1" )
 
 $problems = $false
 Write-Host "CA1 checks" -ForegroundColor Yellow
